@@ -37,7 +37,7 @@ const chatController = {
             assignee: item.meta.assignee,
             assigneeid: item.meta.assignee.id,
             lastmessage: item.messages[0].content,
-            createdAt: moment(item.messages[0].created_at).format(
+            createdAt: moment.unix(item.messages[0].created_at).format(
               "MM/DD/YYYY hh:mm a"
             ),
           },
@@ -80,7 +80,7 @@ const chatController = {
           message: item.content,
           messageid: item.id,
           conversationid: item.conversation_id,
-          createdAt: moment(item.created_at).format("MM/DD/YYYY hh:mm a"),
+          createdAt: moment.unix(item.created_at).format("MM/DD/YYYY hh:mm a"),
           sender: item.sender || null,
         });
       });
