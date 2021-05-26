@@ -21,7 +21,8 @@ app.use(express.urlencoded({ extended: false }));
 
 const server = http.createServer(app);
 const io = socketio(server);
-app.set("socket.io", io);
+app.set("io", io);
+// console.log(io);
 
 io.engine,
   (generatedId = (req) => {
@@ -34,13 +35,27 @@ app.use("/", require("./routes/message"));
 app.use("/", require("./routes/recieveMessage"));
 
 //Checks for any forward to error handler
+///Setting Static Folder
+// const publicFiles = path.join(__dirname, "./publicFiles");
+// app.use(express.static(publicFiles));
+io.on("connection", (socket) => {
+  console.log("a user connected");
 
-app.use("*", (req, res) => {
-  return res.status(404).json({
-    success: false,
-    message: "API doesnot exist, you are currently accessing",
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
   });
 });
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/publicFiles/Agent/agent.html");
+});
+
+// app.use("*", (req, res) => {
+//   return res.status(404).json({
+//     success: false,
+//     message: "API doesnot exist, you are currently accessing",
+//   });
+// });
 
 server.listen(PORT, () => {
   console.log("server is up at" + PORT);

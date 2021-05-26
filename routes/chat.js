@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 require("dotenv").config({ path: "../config/config.env" });
 const chatController = require("../controllers/chat/chat");
+const fetch = require("node-fetch");
+const Users = require("../Model/usersModel");
+const moment = require("moment");
 
 router
   .post(
@@ -14,4 +17,15 @@ router
     chatController.messageToSpecificConversation
   );
 
+router.get(
+  "/account/:agentid/conversations",
+  chatController.getAllConversationBySort
+);
+
+router.post(
+  "/account/:agentid/conversations/:conversationid/toggle",
+  chatController.conversationToggleStatus
+);
+
+router.patch("/account/:agentid/status", chatController.agentStatusController);
 module.exports = router;

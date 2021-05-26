@@ -9,9 +9,7 @@ const ADMIN_USER = {
 };
 
 const ADMIN_ASSIGN_INBOX = {
-  id: 4644,
-  channel_id: 842,
-  name: "AgentChatWood",
+  id: 4672,
 };
 
 module.exports = {

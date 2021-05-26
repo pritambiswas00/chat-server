@@ -2,6 +2,9 @@ const Users = require("../../Model/usersModel");
 const fetch = require("node-fetch");
 const validator = require("validator");
 const { hashPassword, comparePassword } = require("../../utlis/passwordHash");
+const express = require("express");
+const app = express();
+const { userJoin, getAgent } = require("../../utlis/agentSideComponents");
 
 const userController = {
   userSignupController: async (req, res, next) => {
@@ -56,12 +59,12 @@ const userController = {
       });
       const token = await user.generateAuthToken();
       await user.save();
-      res.status(201).json({ user: user, token: token, main: data });
+      res.status(201).json({ user: user, token: token });
     } catch (error) {
       res.status(500).json({ success: false, error: error });
     }
   },
-
+  ///////////////////////////////////////////////////////////////////////////////////////
   userSignInController: async (req, res, next) => {
     const { email, password } = req.body;
     if (!validator.isEmail(email)) {
@@ -87,12 +90,21 @@ const userController = {
           .status(400)
           .json({ success: false, error: "Password is Incorrect" });
       }
+      /////joining all the agent in the array
+      const io = req.app.get("io");
+      io.on("connection", (socket) => {
+        console.log("new Agent has join");
+        const agent = userJoin(socket, isUser.id);
+        console.log(agent);
+      });
+      ///////////////////////////////////////////////////////////////////////////////
       const token = await isUser.generateAuthToken();
       res.status(200).json({ user: isUser.getPublicData(), token: token });
     } catch (error) {
       res.status(500).json({ success: false, error: error });
     }
   },
+  /////////////////////////////////////////////////////////////////////////////////////////
   userSignoutController: async (req, res) => {
     try {
       req.user.tokens = req.user.tokens.filter((token) => {
@@ -106,6 +118,7 @@ const userController = {
       res.status(500).json({ success: false, error: error });
     }
   },
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   userSignoutAllController: async (req, res) => {
     try {
       req.user.tokens = [];

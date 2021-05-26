@@ -24,7 +24,6 @@ const createContact = async (name, email, phonenumber) => {
   if (!newContact) {
     throw new Error();
   }
-  console.log(newContact);
 
   return newContact;
 };
@@ -81,7 +80,6 @@ const sendMessage = async (message, conversationId, type) => {
   if (!messageResponse) {
     throw new Error();
   }
-  console.log(messageResponse);
   return messageResponse;
 };
 

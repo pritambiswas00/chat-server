@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 const express = require("express");
+const app = express();
 const router = express.Router();
 const validateDetails = require("../utlis/validationDetails");
 const {
@@ -8,6 +9,9 @@ const {
   sendMessage,
 } = require("../APIUtils/APIUtils");
 const { saveContact } = require("../utlis/clientSideComponents");
+const { conversationJoin } = require("../utlis/agentSideComponents");
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 
 router.post("/sendMessage", async (req, res) => {
   const { conversationid, type, message } = req.body;
@@ -51,7 +55,19 @@ router.post("/createconversation", async (req, res) => {
       contactSave.conversationid,
       "incoming"
     );
-
+    ///////////////////////////////////// joining the clients
+    const io = req.app.get("io");
+    const clientInfo = {
+      conversationid: contactSave.conversationid,
+      agentid: contactSave.agentDetails.id,
+      clientid: contactSave.clientid,
+    };
+    io.on("connection", (socket) => {
+      console.log("new Client");
+      conversationJoin(socket, clientInfo);
+      console.log("clientAdd");
+    });
+    ////////////////////////////////
     res.status(200).json({
       success: true,
       save: contactSave,
