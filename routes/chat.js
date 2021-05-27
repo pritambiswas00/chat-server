@@ -29,5 +29,6 @@ router.post(
 router.get("/:agentid/agentstatus", chatController.agentStatusCheck);
 
 router.patch("/account/:agentid/status", chatController.agentStatusController);
+router.get("/availableagents", chatController.availableAgents);
 
 module.exports = router;

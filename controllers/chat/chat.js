@@ -333,6 +333,27 @@ const chatController = {
       res.status(500).json({ success: false, error: error });
     }
   },
+  ////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+  availableAgents: async (req, res) => {
+    try {
+      const availableagents = await Users.find({
+        availability_status: "online",
+      });
+      if (availableagents.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "There's no available agents currently available.",
+        });
+      }
+
+      res
+        .status(200)
+        .json({ success: true, availableagents: availableagents.length });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error });
+    }
+  },
 };
 
 module.exports = chatController;

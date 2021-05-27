@@ -42,7 +42,6 @@ const createConversation = async (data) => {
       additional_attributes: {},
     }),
   };
-
   const response = await fetch(
     `https://app.chatwoot.com/api/v1/accounts/${ADMIN_USER.account_id}/conversations`,
     Setting

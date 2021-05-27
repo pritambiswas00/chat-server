@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const socketio = require("socket.io");
 const app = express();
 const http = require("http");
@@ -22,40 +21,24 @@ app.use(express.urlencoded({ extended: false }));
 const server = http.createServer(app);
 const io = socketio(server);
 app.set("io", io);
-// console.log(io);
-
-io.engine,
-  (generatedId = (req) => {
-    return 1;
-  });
 
 app.use("/", require("./routes/chat"));
 app.use("/", require("./routes/user"));
 app.use("/", require("./routes/message"));
 app.use("/", require("./routes/recieveMessage"));
 
-//Checks for any forward to error handler
-///Setting Static Folder
-// const publicFiles = path.join(__dirname, "./publicFiles");
-// app.use(express.static(publicFiles));
-io.on("connection", (socket) => {
-  console.log("a user connected");
+let interval;
 
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
+io.on("connection", (socket) => {
+  console.log("New client connected");
+});
+
+app.use("*", (req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: "API doesnot exist, you are currently accessing",
   });
 });
-
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/publicFiles/Agent/agent.html");
-});
-
-// app.use("*", (req, res) => {
-//   return res.status(404).json({
-//     success: false,
-//     message: "API doesnot exist, you are currently accessing",
-//   });
-// });
 
 server.listen(PORT, () => {
   console.log("server is up at" + PORT);

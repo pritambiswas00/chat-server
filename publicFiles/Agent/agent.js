@@ -1,11 +1,17 @@
 const socket = io();
 const myForm = document.getElementById("agent");
+const username = document.getElementById("username");
+const password = document.getElementsById("password");
+
+socket.on("connection", (data) => {
+  console.log(data);
+});
 
 myForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const username = e.target.elements.username.value;
-  const password = e.target.elements.password.value;
-  const res = await fetch("http://26e0ffa9b326.ngrok.io/signin", {
+  const username = username.value;
+  const password = password.value;
+  const res = await fetch("http://localhost:5000/signin", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
