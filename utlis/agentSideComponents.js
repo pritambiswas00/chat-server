@@ -6,21 +6,42 @@ const conversations = [];
 const userJoin = (sockethandle, agentid) => {
   const agent = { sockethandle, agentid };
   agents.push(agent);
+  return agent;
 };
 
-const getAgent = async (id) => {
-  return agents.find((agent) => {
-    return agent.agentid === id;
+const getAgent = (id) => {
+  agents.find((agent) => {
+    agent.agentid === id;
+    return agent;
   });
+};
+
+const agentLeaves = (agentLeave) => {
+  const index = agents.findIndex(
+    (agent) => agent.agentid === agentLeave.agentid
+  );
+  if (index !== -1) {
+    return agents.splice(index, 1)[0];
+  }
 };
 
 const conversationJoin = (sockethandle, clientInfo) => {
   const client = { sockethandle, clientInfo };
   conversations.push(client);
+  return client;
 };
 
-const getClient = (id) => {
-  return conversations.find((client) => client.clientInfo.clientid === id);
+const getClient = (clientid) => {
+  const checkClient = conversations.find(
+    (client) => client.clientInfo.clientid === clientid
+  );
+  return checkClient;
+};
+
+const getAllClients = (agentid) => {
+  return conversations.filter(
+    (client) => client.clientInfo.agentid === agentid
+  );
 };
 
 module.exports = {
@@ -28,4 +49,6 @@ module.exports = {
   getAgent,
   getClient,
   conversationJoin,
+  agentLeaves,
+  getAllClients,
 };

@@ -9,7 +9,11 @@ const {
   sendMessage,
 } = require("../APIUtils/APIUtils");
 const { saveContact } = require("../utlis/clientSideComponents");
-const { conversationJoin } = require("../utlis/agentSideComponents");
+const {
+  conversationJoin,
+  getClient,
+  getAgent,
+} = require("../utlis/agentSideComponents");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,14 +61,19 @@ router.post("/createconversation", async (req, res) => {
     );
     ///////////////////////////////////// joining the clients
     const io = req.app.get("io");
-    const clientInfo = {
+    const clientDetails = {
       conversationid: contactSave.conversationid,
       agentid: contactSave.agentDetails.id,
       clientid: contactSave.clientid,
     };
     io.on("connection", (socket) => {
       console.log("new Client");
-      conversationJoin(socket, clientInfo);
+      conversationJoin(socket, clientDetails);
+      const agentConvUpdate = getAgent(clientDetails.agentid);
+      if (agentConvUpdate) {
+        const { sockethandle } = agentConvUpdate;
+        sockethandle.emit("agentconversation", clientDetails);
+      }
       console.log("clientAdd");
     });
     ////////////////////////////////

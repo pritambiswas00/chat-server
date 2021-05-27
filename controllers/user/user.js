@@ -4,7 +4,12 @@ const validator = require("validator");
 const { hashPassword, comparePassword } = require("../../utlis/passwordHash");
 const express = require("express");
 const app = express();
-const { userJoin, getAgent } = require("../../utlis/agentSideComponents");
+const {
+  userJoin,
+  getAgent,
+  agentLeaves,
+  getClient,
+} = require("../../utlis/agentSideComponents");
 
 const userController = {
   userSignupController: async (req, res, next) => {
@@ -90,6 +95,7 @@ const userController = {
           .status(400)
           .json({ success: false, error: "Password is Incorrect" });
       }
+
       /////joining all the agent in the array
       const io = req.app.get("io");
       io.on("connection", (socket) => {
@@ -110,7 +116,20 @@ const userController = {
       req.user.tokens = req.user.tokens.filter((token) => {
         return token.token !== req.token;
       });
-      await req.user.save();
+      // const updateUser = await Users.findAndModify({
+      //   query: { email: req.user.email },
+      //   sort: { account_id: 3 },
+      //   update: { availability_status: "offline" },
+      // });
+      // await updateUser.save();
+      // const agent = getAgent(req.user.id);
+      // if (agent) {
+      //   agentLeaves(agent);
+      //   const respectiveClient = getClientByAgentId(agentid);
+      //   const { sockethandle, clientinfo } = respectiveClient;
+      //   sockethandle.emit("signout", { clientinfo, status }); /////Informing the client that agent has signout while chating.///
+      // }
+
       res
         .status(200)
         .json({ success: true, message: "You have successfully logout" });

@@ -26,6 +26,8 @@ router.post(
   "/account/:agentid/conversations/:conversationid/toggle",
   chatController.conversationToggleStatus
 );
+router.get("/:agentid/agentstatus", chatController.agentStatusCheck);
 
 router.patch("/account/:agentid/status", chatController.agentStatusController);
+
 module.exports = router;

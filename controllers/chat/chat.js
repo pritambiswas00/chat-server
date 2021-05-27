@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 const Users = require("../../Model/usersModel");
 require("dotenv").config({ path: "../config/config.env" });
 const moment = require("moment");
+const { getAllClients } = require("../../utlis/agentSideComponents");
 
 const chatController = {
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,9 +234,10 @@ const chatController = {
       return allowedUpdates.includes(update);
     });
     if (!checkValidBody) {
-      return res
-        .status(404)
-        .json({ success: false, error: "The value should be status" });
+      return res.status(404).json({
+        success: false,
+        error: "The value should be conversationstatus",
+      });
     }
     try {
       const { conversationstatus } = req.body;
@@ -299,6 +301,13 @@ const chatController = {
 
     update.forEach((value) => (getAgent[value] = req.body[value]));
     await getAgent.save();
+
+    const allAgentClients = getAllClients(agentid);
+    allAgentClients.map((client) => {
+      const { sockethandle } = client;
+      sockethandle.emit("status", getAgent.availability_status);
+    });
+
     res.status(200).json({
       success: true,
       message: "Agent Status Has Changed",
@@ -307,6 +316,23 @@ const chatController = {
   },
   //////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////
+  agentStatusCheck: async (req, res) => {
+    try {
+      const { agentid } = req.params;
+      const agent = await Users.findOne({ id: agentid });
+      if (!agent) {
+        return res.status(404).json({
+          success: false,
+          error: "Agent is not exist in the database",
+        });
+      }
+
+      const agentStatus = agent.availability_status;
+      res.status(200).json({ success: true, data: agentStatus });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error });
+    }
+  },
 };
 
 module.exports = chatController;
